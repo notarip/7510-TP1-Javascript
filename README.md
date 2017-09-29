@@ -1,3 +1,9 @@
+# TODO
+[x] dbParseTest
+[] checkersTest
+[] dbLoadTest
+[]  
+
 # javascript-template
 
 A Javascript library designed to be used as a template for each exercise/tp used in Tecnicas de Diseño.

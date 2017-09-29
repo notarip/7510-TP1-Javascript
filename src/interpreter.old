@@ -1,0 +1,15 @@
+/*var Interpreter = function () {
+
+    this.parseDB = function (db) {
+
+    }
+
+    this.checkQuery = function (params) {
+        return true;
+    }
+
+}
+
+module.exports = Interpreter;
+
+*/

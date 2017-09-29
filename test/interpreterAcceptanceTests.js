@@ -1,8 +1,16 @@
+/*
 var expect = require("chai").expect;
 var should = require('should');
 var assert = require('assert');
 
 var Interpreter = require('../src/interpreter');
+
+
+beforeEach(function () {
+    interpreter = new Interpreter();
+    interpreter.parseDB(loadDB(true));
+
+});
 
 
 describe("Interpreter", function () {
@@ -51,7 +59,7 @@ describe("Interpreter", function () {
             assert(interpreter.checkQuery('varon(juan)'));
         });
 
-        it('varon(maria) should be false', function () {
+      it('varon(maria) should be false', function () {
             assert(interpreter.checkQuery('varon(maria)') === false);
         });
 
@@ -71,6 +79,7 @@ describe("Interpreter", function () {
 
     });
 
+
     describe('Interpreter Rules', function () {
 
         it('hijo(pepe, juan) should be true', function () {
@@ -89,5 +98,4 @@ describe("Interpreter", function () {
 
 
 });
-
-
+*/
