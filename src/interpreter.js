@@ -1,27 +1,35 @@
 
-
-
-
 var Interpreter = function () {
 
+  var self = this;
   this.db = "";
+
+  this.replaceAll = function(str, search, replacement) {
+     return str.split(search).join(replacement);
+  };
 
   this.getDB = function(){
     return this.db;
   }
 
   this.parseDB = function(db) {
-    var parsedDB = db.split(".");
+    var parsedDB = [];
+    if(Object.prototype.toString.call(db) === '[object Array]'){
+      parsedDB = this.cleanDot(db);
+    }else{
+      parsedDB = db.split(".");
+    }
+
     parsedDB = this.cleanWhities(parsedDB);
     parsedDB = this.cleanRC(parsedDB);
     var checkFact = this.checkFact;
     var checkRule = this.checkRule;
 
-    trulyArr = parsedDB.map(function (elem) {
+    var trulyArr = parsedDB.map(function (elem) {
       return (checkFact(elem) || checkRule(elem));
     });
 
-    dbState = trulyArr.reduce(function (e1, e2) {
+    var dbState = trulyArr.reduce(function (e1, e2) {
       return e1 && e2;
     });
 
@@ -32,11 +40,6 @@ var Interpreter = function () {
     }
 
     return this.db;
-  }
-
-
-  this.checkQuery = function (params) {
-    return true;
   }
 
   this.loadDB = function(nice) {
@@ -69,24 +72,31 @@ var Interpreter = function () {
 
   this.cleanWhities = function(arr) {
     arr = arr.map(function (elem) {
-      return elem.replace('\n', '');
+      elem =  self.replaceAll(elem,'\n', '')
+      return self.replaceAll(elem, ' ','');
     });
     return arr;
   }
 
+  this.cleanDot = function(arr) {
+    return arr.map(function (elem) {
+      return elem.replace('.', '');
+    });
+  }
   
   this.cleanQuery = function(query) {
-    return query.replace(".", "").trim();
+    query = self.replaceAll(query,".", "");
+    return self.replaceAll(query," ","");
   }
 
   this.validateQuery = function(query) {
-    query = this.cleanQuery(query);
-    return (this.checkFact(query) || this.checkRule(query));
+    query = self.cleanQuery(query);
+    return (self.checkFact(query) || self.checkRule(query));
   }
 
   this.extractFacts = function() {
-    var arr = this.getDB();
-    var checkFact = this.checkFact;
+    var arr = self.getDB();
+    var checkFact = self.checkFact;
     var facts = arr.filter(function (elem) {
       return checkFact(elem);
     });
@@ -94,8 +104,8 @@ var Interpreter = function () {
   }
 
   this.extractRules = function() {
-    var arr = this.getDB();
-    var checkRule = this.checkRule;
+    var arr = self.getDB();
+    var checkRule = self.checkRule;
     var rules = arr.filter(function (elem) {
       return checkRule(elem);
     });
@@ -131,9 +141,9 @@ var Interpreter = function () {
   }
 
   this.transformRule = function(rule) {
-    var ruleName = extractRuleName(rule);
-    var ruleParams = extractRuleParams(rule);
-    var ruleFacts = extractRuleFacts(rule);
+    var ruleName = self.extractRuleName(rule);
+    var ruleParams = self.extractRuleParams(rule);
+    var ruleFacts = self.extractRuleFacts(rule);
 
     ruleParams.forEach(function (item, index) {
       ruleFacts = ruleFacts.map(function (elem) {
@@ -164,6 +174,12 @@ var Interpreter = function () {
     return (fact.length > 0);
   }
 
+  this.extracQueryParams = function(query){
+
+    matches = query.match(/[a-z]+/g);
+    return matches.splice(1,matches.length);     
+  }
+
   this.evaluateRule = function(query, rules, facts) {
     var re = /(\w+)\([a-z,]+\)/;
     var ruleName = re.exec(query)[1];
@@ -173,35 +189,37 @@ var Interpreter = function () {
 
     if (rule.length == 1) {
       rule = rule[0];
-      params = extracQueryParams(query);
+      params =self.extracQueryParams(query);
       toEvaluateFacts = rule.facts;
       params.forEach(function (item, index) {
         toEvaluateFacts = toEvaluateFacts.map(function (elem) {
           return elem.replace(index, item);
         });
       });
+      evaluatedFacts = toEvaluateFacts.map(function(elem){
+        return self.evaluateFact(elem,facts);
+      });
+      return evaluatedFacts.reduce(function(e1,e2){
+        return e1 && e2;
+      });
     } else {
       return false;
     }
   }
 
-  this.evaluateQuery = function(db, query) {
+  this.evaluateQuery = function(query) {
 
-    if (validateQuery(query)) {
-      query = cleanQuery(query);
-      db = parseDB(db);
-      facts = extractFacts(db);
-      rules = transformRules(extractRules(db));
-      return evaluateFact(query, facts) || evaluateRule(query, rules, facts);
+    if (self.validateQuery(query)) {
+      query = self.cleanQuery(query);
+      db = self.getDB();
+      facts = self.extractFacts(db);
+      rules = self.transformRules(this.extractRules(db));
+      return self.evaluateFact(query, facts) || self.evaluateRule(query, rules, facts);
     } else {
       return null;
     }
   }
+  this.checkQuery = this.evaluateQuery; 
 }
 
 module.exports = Interpreter;
-
-/*interpreter = new Interpreter();
-
-console.log(interpreter.parseDB(loadDB(false)));
-*/

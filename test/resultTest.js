@@ -1,14 +1,17 @@
-var assert = require("assert");
+var expect = require("chai").expect;
+var should = require('should');
+var assert = require('assert');
 
-var fs = require('fs');
-var vm = require('vm');
-var path = "src/app.js";
-var code = fs.readFileSync(path);
-vm.runInThisContext(code);
+var Interpreter = require('../src/interpreter');
 
+beforeEach(function () {
+    interpreter = new Interpreter();
+    interpreter.parseDB(interpreter.loadDB(true));
+
+});
 
 describe("evaluaeteWrongQuery",function(){
     it('should return null ',function(){
-        assert.equal(evaluateQuery(loadDB(true), "padrejuan,manuel"), null);
+        assert.equal(interpreter.evaluateQuery("padrejuan,manuel"), null);
     })
 });

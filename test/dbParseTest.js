@@ -2,12 +2,6 @@ var expect = require("chai").expect;
 var should = require('should');
 var assert = require('assert');
 
-
-var fs = require('fs');
-var vm = require('vm');
-//var path = "src/interpreter.js";
-//var code = fs.readFileSync(path);
-//vm.runInThisContext(code);
 var Interpreter = require('../src/interpreter');
 
 

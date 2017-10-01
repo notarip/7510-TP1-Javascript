@@ -1,17 +1,9 @@
-/*
+
 var expect = require("chai").expect;
 var should = require('should');
 var assert = require('assert');
 
 var Interpreter = require('../src/interpreter');
-
-
-beforeEach(function () {
-    interpreter = new Interpreter();
-    interpreter.parseDB(loadDB(true));
-
-});
-
 
 describe("Interpreter", function () {
 
@@ -86,7 +78,7 @@ describe("Interpreter", function () {
             assert(interpreter.checkQuery('hijo(pepe, juan)') === true);
         });
         it('hija(maria, roberto) should be false', function () {
-            assert(interpreter.checkQuery('hija(maria, roberto)' === false));
+            assert(interpreter.checkQuery('hija(maria, roberto)') === false);
         });
         it('hijo(pepe, juan) should be true', function () {
             assert(interpreter.checkQuery('hijo(pepe, juan)'));
@@ -98,4 +90,4 @@ describe("Interpreter", function () {
 
 
 });
-*/
+
